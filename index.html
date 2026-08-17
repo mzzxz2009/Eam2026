@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EAM 2026</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0f1115;
+  color:#fff;
+}
+header{
+  padding:22px;
+  background:#171a21;
+  text-align:center;
+}
+h1{margin:0 0 8px}
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:18px;
+}
+.card{
+  background:#191d25;
+  border-radius:14px;
+  padding:18px;
+  margin:12px 0;
+}
+.progress{
+  height:12px;
+  background:#30343d;
+  border-radius:10px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#4caf50;
+}
+button{
+  width:100%;
+  padding:14px;
+  margin:7px 0;
+  border:0;
+  border-radius:10px;
+  background:#272c36;
+  color:white;
+  font-size:16px;
+  text-align:left;
+}
+button:active{transform:scale(.98)}
+.done{
+  background:#194d2a;
+}
+.small{
+  color:#aaa;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>📚 EAM 2026</h1>
+  <div id="progressText">0 / 261 aulas concluídas</div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>Seu progresso</h2>
+    <div class="progress">
+      <div class="progress-bar" id="bar"></div>
+    </div>
+    <p id="percent">0%</p>
+  </div>
+
+  <div class="card">
+    <h2>📖 Matérias</h2>
+
+    <button onclick="abrir('matematica')">
+      📘 Matemática
+    </button>
+
+    <button onclick="abrir('fisica')">
+      ⚡ Física
+    </button>
+
+    <button onclick="abrir('quimica')">
+      ⚗️ Química
+    </button>
+
+    <button onclick="abrir('portugues')">
+      📖 Português
+    </button>
+
+    <button onclick="abrir('ingles')">
+      🇬🇧 Inglês
+    </button>
+  </div>
+
+  <div id="aulas"></div>
+
+</div>
+
+<script>
+
+const materias = {
+
+matematica: [
+"1. Números naturais",
+"2. Números primos",
+"3. Fatoração",
+"4. Número de divisores",
+"5. MDC",
+"6. MMC",
+"7. Razão e proporção",
+"8. Regra de três simples",
+"9. Regra de três composta",
+"10. Grandezas diretamente proporcionais",
+"11. Grandezas inversamente proporcionais",
+"12. Operações com números reais",
+"13. Porcentagem",
+"14. Juros simples",
+"15. Juros compostos"
+],
+
+fisica: [
+"1. Movimento e repouso",
+"2. Velocidade escalar média",
+"3. Aceleração escalar média",
+"4. Movimento Uniforme (MU)",
+"5. Movimento Uniformemente Variado (MUV)"
+],
+
+quimica: [
+"1. Propriedades da matéria",
+"2. Mudanças de estado físico",
+"3. Classificação de misturas",
+"4. Fracionamento de misturas",
+"5. Modelos atômicos"
+],
+
+portugues: [
+"1. Leitura e análise de textos",
+"2. Propósitos do autor",
+"3. Informações implícitas e explícitas",
+"4. Linguagem denotativa e conotativa",
+"5. Coerência e coesão"
+],
+
+ingles: [
+"1. Reading comprehension",
+"2. Verb tenses",
+"3. Formas afirmativa, negativa e interrogativa",
+"4. Infinitive",
+"5. Imperative"
+]
+
+};
+
+let concluidas =
+JSON.parse(localStorage.getItem("eamConcluidas") || "[]");
+
+function salvar(){
+  localStorage.setItem(
+    "eamConcluidas",
+    JSON.stringify(concluidas)
+  );
+  atualizarProgresso();
+}
+
+function atualizarProgresso(){
+
+  const total = 261;
+  const feitas = concluidas.length;
+
+  document.getElementById("progressText").innerText =
+    `${feitas} / ${total} aulas concluídas`;
+
+  const porcentagem =
+    Math.round((feitas / total) * 100);
+
+  document.getElementById("percent").innerText =
+    porcentagem + "%";
+
+  document.getElementById("bar").style.width =
+    porcentagem + "%";
+}
+
+function abrir(materia){
+
+  const area = document.getElementById("aulas");
+
+  area.innerHTML =
+    `<div class="card">
+      <h2>${nomeMateria(materia)}</h2>
+      <p class="small">
+        Marque cada aula quando terminar.
+      </p>
+    </div>`;
+
+  materias[materia].forEach((aula,index)=>{
+
+    const id = materia + "-" + index;
+
+    const button = document.createElement("button");
+
+    button.innerText =
+      (concluidas.includes(id) ? "✅ " : "⬜ ")
+      + aula;
+
+    if(concluidas.includes(id)){
+      button.classList.add("done");
+    }
+
+    button.onclick = ()=>{
+
+      if(concluidas.includes(id)){
+        concluidas =
+          concluidas.filter(x=>x!==id);
+      }else{
+        concluidas.push(id);
+      }
+
+      salvar();
+      abrir(materia);
+    };
+
+    area.appendChild(button);
+
+  });
+
+}
+
+function nomeMateria(m){
+  return {
+    matematica:"📘 Matemática",
+    fisica:"⚡ Física",
+    quimica:"⚗️ Química",
+    portugues:"📖 Português",
+    ingles:"🇬🇧 Inglês"
+  }[m];
+}
+
+atualizarProgresso();
+
+</script>
+
+</body>
+  </html>
